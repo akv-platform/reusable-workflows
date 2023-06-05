@@ -37,10 +37,12 @@ jobs:
 
     - name: Add comment to the Issue/PR
       run: |
-        $RequestBody = @'{
+        $RequestBody = @'
+        {
           "body" = "${{steps.create-comment.outputs.MESSAGE}}"
-        }'
-        
+        }
+        '@
+
         $Headers = @{
             Accept = "application/vnd.github+json";
             Authorization = "Bearer ${{github.token}}";
