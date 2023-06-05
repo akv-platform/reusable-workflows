@@ -1,0 +1,49 @@
+# 
+
+name: Automatic response to new issues and PRs
+
+on:
+  workflow_call:
+    inputs:
+        issue-comment:
+          description: "Optional input to set up response message for newly created issues"
+          required: false
+          type: string
+          default: "Hi <userName> :wave:! Thanks for the issue, it's now tracked by our team of maintainers."
+        pr-comment:
+          description: "Optional input to set up response message for newly created PRs"
+          required: false
+          type: string
+          default: "Hi <userName> :wave:! Thanks for your PR, it's now tracked by our team of maintainers."
+
+jobs:
+  add-response:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get issue/PR information
+      id: get-information
+      run: |
+        $EntityNumber = ("${{github.event_name}}" -ceq "issues" ) ? "${{github.event.issue.number}}" : "${{github.event.pull_request.number}}"
+        echo "ENTITY_NUMBER=$($EntityNumber)" >> $Env:GITHUB_OUTPUT
+      shell: pwsh
+
+    - name: Create comment body
+      id: create-comment
+      run: |
+        $CommentMessage = ("${{github.event_name}}" -ceq "issues" ) ? "${{inputs.issue-comment}}" : "${{inputs.pr-comment}}"
+        $FormattedMessage = $CommentMessage.replace("<userName>", "@${{github.event.sender.login}}")
+        echo "MESSAGE=$($FormattedMessage)" >> $Env:GITHUB_OUTPUT
+      shell: pwsh
+
+    - name: Add comment to the Issue/PR
+      run: |
+        curl -L \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${{github.token}}" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        https://api.github.com/repos/${{github.repository}}/issues/${{steps.get-information.outputs.ENTITY_NUMBER}}/comments \
+        -d '{"body":"${{steps.create-comment.outputs.MESSAGE}}"}'
+        echo "Comment created"
+
+
