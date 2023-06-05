@@ -39,7 +39,7 @@ jobs:
       run: |
         $RequestBody = @'
         {
-          "body" = "${{steps.create-comment.outputs.MESSAGE}}"
+          "body":"${{steps.create-comment.outputs.MESSAGE}}"
         }
         '@
 
