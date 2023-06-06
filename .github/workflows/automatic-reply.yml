@@ -14,12 +14,12 @@ on:
           description: "Optional input to set up a comment template for newly created issues"
           required: false
           type: string
-          default: "Hi <userName> :wave:! Thanks for the issue, it's now tracked by our team of maintainers."
+          default: "Hi <userName> :wave:! Thanks for the issue, it's now tracked by our team of maintainers. As sson as investigation is done, they'll get back to you with updates."
         pr-comment-template:
           description: "Optional input to set up a comment template for newly created PRs"
           required: false
           type: string
-          default: "Hi <userName> :wave:! Thanks for your PR, it's now tracked by our team of maintainers."
+          default: "Hi <userName> :wave:! Thanks for the PR, it's now tracked by our team of maintainers. As soon as an investigation is done, they'll get back to you with feedback."
 
 jobs:
   automatic-reply:
@@ -35,7 +35,7 @@ jobs:
     - name: Create comment body
       id: create-comment
       run: |
-        $CommentMessage = ("${{github.event_name}}" -ceq "issues" ) ? "${{inputs.issue-comment}}" : "${{inputs.pr-comment}}"
+        $CommentMessage = ("${{github.event_name}}" -ceq "issues" ) ? "${{inputs.issue-comment-template}}" : "${{inputs.pr-comment-template}}"
         $FormattedMessage = $CommentMessage.replace("<userName>", "@${{github.event.sender.login}}")
         echo "MESSAGE=$($FormattedMessage)" >> $Env:GITHUB_OUTPUT
       shell: pwsh
@@ -56,5 +56,3 @@ jobs:
         
         Invoke-RestMethod -Uri "https://api.github.com/repos/${{github.repository}}/issues/${{steps.get-information.outputs.ENTITY_NUMBER}}/comments" -Method "Post" -Body $RequestBody -Headers $Headers
       shell: pwsh
-
-
