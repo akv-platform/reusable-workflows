@@ -1,26 +1,31 @@
-# 
+# This workflow helps to automate replying to newly created issues and PRs in a repository.
+# Standard comment templates are set up for that.
+# The workflow offers a convenient way to set up your own comment templates for both issues and PRs using the following inputs:
+# - issue-comment-template
+# - pr-comment-template
+# These inputs support using the reserved template: <userName> to credit the issue's or PR's author.
 
-name: Automatic response to new issues and PRs
+name: Automatic reply to new issues and PRs
 
 on:
   workflow_call:
     inputs:
-        issue-comment:
-          description: "Optional input to set up response message for newly created issues"
+        issue-comment-template:
+          description: "Optional input to set up a comment template for newly created issues"
           required: false
           type: string
           default: "Hi <userName> :wave:! Thanks for the issue, it's now tracked by our team of maintainers."
-        pr-comment:
-          description: "Optional input to set up response message for newly created PRs"
+        pr-comment-template:
+          description: "Optional input to set up a comment template for newly created PRs"
           required: false
           type: string
           default: "Hi <userName> :wave:! Thanks for your PR, it's now tracked by our team of maintainers."
 
 jobs:
-  add-response:
+  automatic-reply:
     runs-on: ubuntu-latest
     steps:
-    - name: Get issue/PR information
+    - name: Get issue/PR number
       id: get-information
       run: |
         $EntityNumber = ("${{github.event_name}}" -ceq "issues" ) ? "${{github.event.issue.number}}" : "${{github.event.pull_request.number}}"
@@ -50,7 +55,6 @@ jobs:
         }
         
         Invoke-RestMethod -Uri "https://api.github.com/repos/${{github.repository}}/issues/${{steps.get-information.outputs.ENTITY_NUMBER}}/comments" -Method "Post" -Body $RequestBody -Headers $Headers
-        echo "Comment created"
       shell: pwsh
 
 
