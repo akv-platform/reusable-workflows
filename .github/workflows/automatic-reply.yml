@@ -14,7 +14,7 @@ on:
           description: "Optional input to set up a comment template for newly created issues"
           required: false
           type: string
-          default: "Hi <userName> :wave:! Thanks for the issue, it's now tracked by our team of maintainers. As sson as investigation is done, they'll get back to you with updates."
+          default: "Hi <userName> :wave:! Thanks for the issue, it's now tracked by our team of maintainers. As soon as an investigation is done, they'll get back to you with updates."
         pr-comment-template:
           description: "Optional input to set up a comment template for newly created PRs"
           required: false
