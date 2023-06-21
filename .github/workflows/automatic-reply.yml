@@ -4,6 +4,16 @@
 # - issue-comment-template
 # - pr-comment-template
 # These inputs support calling for github actions contexts.
+#
+# It's possible to toggle automatic replying on and off for issues or pull requests, or for both of them using workflow triggers such as:
+#
+# on:
+#  issues:
+#    types: [opened]
+#  pull_request:
+#    types: [opened]
+
+
 
 name: Automatic reply to new issues and PRs
 
